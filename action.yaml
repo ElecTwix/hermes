@@ -1,6 +1,6 @@
 # action.yml
-name: "Hello World"
-description: "Greet someone and record the time"
+name: "Hermes Summarize"
+description: "Test Hermes"
 inputs:
   who-to-greet: # id of input
     description: "Who to greet"
