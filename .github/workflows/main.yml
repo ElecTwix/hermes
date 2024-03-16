@@ -7,7 +7,7 @@ jobs:
     steps:
       - name: Hermes
         id: hello
-        uses: ElecTwix/hermes@test3
+        uses: ElecTwix/hermes@test4
         with:
           who-to-greet: "Mona the Octocat"
       # Use the output from the `hello` step

@@ -9,7 +9,9 @@ RUN go mod download && go mod verify
 
 
 COPY . .
+RUN ls -la
 RUN go build -v -o /usr/local/bin/app /usr/src/app/cmd/hermes/hermes.go 
+RUN ls -la /usr/local/bin/app
 
 
-CMD ["/usr/src/entrypoint.sh"]
+ENTRYPOINT ["./entrypoint.sh"]
