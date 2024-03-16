@@ -1,0 +1,12 @@
+on: [push]
+
+jobs:
+  hello_world_job:
+    runs-on: ubuntu-latest
+    name: A job to say hello
+    steps:
+      - name: Hermes
+        id: hello
+        uses: ElecTwix/hermes@fa9b803190c608ce763e725ec339a85f54e60b8b
+        with:
+          who-to-greet: "Mona the Octocat"
