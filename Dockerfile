@@ -1,11 +1,14 @@
 # Container image that runs your code
-FROM alpine:3.10
+FROM golang:1.22
 
-WORKDIR /usr/src
+WORKDIR /usr/src/app
 
-# Copies your code file from your action repository to the filesystem path `/` of the container
-COPY entrypoint.sh . 
-RUN chmod +x entrypoint.sh
+# pre-copy/cache go.mod for pre-downloading dependencies and only redownloading them in subsequent builds if they change
+COPY go.mod go.sum ./
+RUN go mod download && go mod verify
 
-# Code file to execute when the docker container starts up (`entrypoint.sh`)
-ENTRYPOINT ["/usr/src/entrypoint.sh"]
+
+COPY . .
+RUN go build -v -o /usr/local/bin/app /usr/src/app/cmd/hermes/hermes.go 
+
+CMD ["app"]
