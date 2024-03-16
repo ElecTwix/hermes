@@ -12,4 +12,4 @@ COPY . .
 RUN go build -v -o /usr/local/bin/app /usr/src/app/cmd/hermes/hermes.go 
 
 
-ENTRYPOINT [ "/usr/local/bin/app" ]
+CMD ["/usr/src/entrypoint.sh"]
