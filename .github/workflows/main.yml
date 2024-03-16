@@ -7,9 +7,7 @@ jobs:
     steps:
       - name: Hermes
         id: hello
-        uses: ElecTwix/hermes@test2
-        with:
-          who-to-greet: "Mona the Octocat"
+        uses: ElecTwix/hermes@test3
       # Use the output from the `hello` step
       - name: Get the output time
         run: echo "The time was ${{ steps.hello.outputs.time }}"

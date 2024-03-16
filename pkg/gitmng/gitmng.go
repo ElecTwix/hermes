@@ -10,6 +10,7 @@ func NewGitMng() *GitMng {
 
 func (g *GitMng) PlainOpen(path string) error {
 	git.PlainOpen(path)
+	return nil
 }
 
 func (g *GitMng) Clone() error {
