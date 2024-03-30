@@ -28,13 +28,20 @@ func main() {
 		os.Exit(1)
 	}
 
-	sha, ok := os.LookupEnv("GITHUB_WORKSPACE")
+	sha, ok := os.LookupEnv("GITHUB_SHA")
 	if !ok {
 		fmt.Println("GITHUB_SHA not set")
 		os.Exit(1)
 	}
 
-	commitMsg := repo.GetCommit(sha)
+	fmt.Println("SHA: ", sha)
+
+	commitMsg, err := repo.GetCommit(sha)
+	if err != nil {
+		fmt.Println(err)
+		fmt.Println("Error getting commit message")
+		os.Exit(1)
+	}
 
 	fmt.Println(commitMsg)
 }

@@ -5,8 +5,9 @@ jobs:
     runs-on: ubuntu-latest
     name: A job to say hello
     steps:
+      - uses: actions/checkout@v4
       - name: Hermes
         id: hello
-        uses: ElecTwix/hermes@fa9b803190c608ce763e725ec339a85f54e60b8b
+        uses: ElecTwix/hermes@ce45a5e564a26b6f8e25e2b3a56376292ccbf662
         with:
-          who-to-greet: "Mona the Octocat"
+          who-to-greet: "Hello 123"
