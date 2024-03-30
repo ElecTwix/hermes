@@ -3,12 +3,10 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 	"os"
 
+	"github.com/ElecTwix/hermes/pkg/genai"
 	"github.com/ElecTwix/hermes/pkg/gitmanager"
-	"github.com/google/generative-ai-go/genai"
-	"google.golang.org/api/option"
 )
 
 func main() {
@@ -47,14 +45,34 @@ func main() {
 		os.Exit(1)
 	}
 
-	ctx := context.Background()
-	// Access your API key as an environment variable (see "Set up your API key" above)
-	client, err := genai.NewClient(ctx, option.WithAPIKey(os.Getenv("API_KEY_SECRET")))
-	if err != nil {
-		log.Fatal(err)
+	genaiInstance := genai.NewGenAI()
+	apiKey, ok := os.LookupEnv("API_KEY_SECRET")
+	if !ok {
+		fmt.Println("API_KEY_SECRET not set")
+		os.Exit(1)
 	}
 
-	defer client.Close()
+	ctx := context.Background()
+	err = genaiInstance.Login(apiKey, ctx, "gemini-pro")
+	if err != nil {
+		fmt.Println(err)
+		fmt.Println("Error logging in to GenAI")
+		os.Exit(1)
+	}
 
-	fmt.Println(commitMsg)
+	const promptPrefix string = `Please summarize this git commit message for my PR: like this:
+                File: path/to/file:15-20 added http server for serving static files
+                File: path/to/another/file:5-10 fixed bug with http server not serving files
+                File: path/to/third/file:30-35 added new feature for support bulk create for DB. 
+        `
+
+	prompt := fmt.Sprintf("%s DATA: [%s]", promptPrefix, commitMsg)
+	output, err := genaiInstance.Generate(prompt, ctx)
+	if err != nil {
+		fmt.Println(err)
+		fmt.Println("Error generating content")
+		os.Exit(1)
+	}
+
+	fmt.Println(output)
 }

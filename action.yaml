@@ -12,7 +12,5 @@ outputs:
 runs:
   using: "docker"
   image: "Dockerfile"
-  env:
-    API_KEY_SECRET: ${{ secrets.ApiKeySecret }}
   args:
     - ${{ inputs.who-to-greet }}

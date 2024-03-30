@@ -49,23 +49,26 @@ func (g *GitRepository) GetCommit(sha string) (string, error) {
 	// Get the parent commit of the current commit
 	parentCommit, err := commit.Parent(0)
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 
 	// Get the trees for current and parent commits
 	commitTree, err := commit.Tree()
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 	parentTree, err := parentCommit.Tree()
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 
 	changes, err := commitTree.Diff(parentTree)
 	if err != nil {
-		panic(err)
+		return "", err
 	}
+
+	var changeCount int
+	var changeString string
 
 	for _, change := range changes {
 		from, to, err := change.Files()
@@ -73,17 +76,20 @@ func (g *GitRepository) GetCommit(sha string) (string, error) {
 			return "", err
 		}
 
+		if from == nil || to == nil {
+			continue
+		}
+
 		before := from.Name
 		after := to.Name
-		fmt.Printf("Change: %s -> %s\n", before, after)
 
-		// Print the changes in the files
 		patch, err := change.Patch()
 		if err != nil {
 			return "", err
 		}
 
-		fmt.Println(patch)
+		changeCount++
+		changeString += fmt.Sprintf("Change %d: %s -> %s\n%s\n", changeCount, before, after, patch.String())
 	}
 
 	// Print the changes
