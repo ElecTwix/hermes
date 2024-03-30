@@ -1,10 +1,14 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/ElecTwix/hermes/pkg/gitmanager"
+	"github.com/google/generative-ai-go/genai"
+	"google.golang.org/api/option"
 )
 
 func main() {
@@ -42,6 +46,15 @@ func main() {
 		fmt.Println("Error getting commit message")
 		os.Exit(1)
 	}
+
+	ctx := context.Background()
+	// Access your API key as an environment variable (see "Set up your API key" above)
+	client, err := genai.NewClient(ctx, option.WithAPIKey(os.Getenv("API_KEY_SECRET")))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer client.Close()
 
 	fmt.Println(commitMsg)
 }

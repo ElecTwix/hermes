@@ -8,6 +8,6 @@ jobs:
       - uses: actions/checkout@v4
       - name: Hermes
         id: hello
-        uses: ElecTwix/hermes@ce45a5e564a26b6f8e25e2b3a56376292ccbf662
+        uses: ElecTwix/hermes@0cafdf630fe99e918c90764847347f46b43e1453
         with:
           who-to-greet: "Hello 123"
