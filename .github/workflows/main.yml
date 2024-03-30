@@ -1,15 +1,20 @@
-on: [push]
+on:
+  push:
+  pull_request:
 
 jobs:
-  hello_world_job:
+  hermes-summarize:
     runs-on: ubuntu-latest
-    name: A job to say hello
+    name: Hermes summarize
     steps:
       - uses: actions/checkout@v4
       - name: Hermes
         id: hello
         env:
+          GITHUB_PR_NUMBER: ${{github.event.pull_request.number}}
+
+          GITHUB_REPO_OWNER: ${{github.event.pull_request.head.repo.owner.login}}
+          GITHUB_REPO_NAME: ${{github.event.pull_request.head.repo.name}}
+
           API_KEY_SECRET: ${{ secrets.ApiKeySecret }}
         uses: ElecTwix/hermes@657afc836db7e651dbfc2726e77e21da8a088a98
-        with:
-          who-to-greet: "Hello 123"
