@@ -19,4 +19,4 @@ jobs:
 
           API_KEY_SECRET: ${{ secrets.API_KEY_SECRET }}
           PR_GITHUB_SHA: ${{ github.event.pull_request.head.sha }}
-        uses: ElecTwix/hermes@246cb3af0cacd1361a764355062714c9bf31743e
+        uses: ElecTwix/hermes@24b10c2c1dc17568fb660dc4801fa6bf3ebccf94
