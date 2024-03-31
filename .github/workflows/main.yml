@@ -19,4 +19,4 @@ jobs:
 
           GEMINI_KEY: ${{ secrets.key }}
           PR_GITHUB_SHA: ${{ github.event.pull_request.head.sha }}
-        uses: ElecTwix/hermes@24b10c2c1dc17568fb660dc4801fa6bf3ebccf95
+        uses: ElecTwix/hermes@6ea8cec949eb89b7512861f4dc2ff3d4611c9163
