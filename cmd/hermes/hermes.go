@@ -12,6 +12,7 @@ import (
 )
 
 func main() {
+	fmt.Println("hello")
 	workspace := os.Getenv("GITHUB_WORKSPACE")
 	if workspace == "" {
 		fmt.Println("GITHUB_WORKSPACE not set")
