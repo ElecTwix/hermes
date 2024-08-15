@@ -20,7 +20,7 @@ func main() {
 	}
 
 	ctx := context.Background()
-	err := genaiInstance.Login(ctx, geminiToken, "gemini-1.5-flash")
+	err := genaiInstance.Login(ctx, geminiToken, "gemini-1.5-pro")
 	if err != nil {
 		fmt.Println(err)
 		fmt.Println("Error logging in to GenAI")

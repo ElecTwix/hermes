@@ -44,7 +44,17 @@ func (g *GenAI) Generate(prompt string, ctx context.Context) (string, error) {
 		parts = append(parts, candidate.Content.Parts...)
 	}
 
-	contentString := fmt.Sprintf("%s", parts)
+	str := ""
+	for _, part := range parts {
+		switch p := part.(type) {
+		case genai.Text:
+			str += string(p)
+		case genai.Blob:
+			str += fmt.Sprintf("Blob: %s", p.MIMEType)
+		default:
+			str += fmt.Sprintf("Unknown type: %T", p)
+		}
+	}
 
-	return contentString, nil
+	return str, nil
 }
