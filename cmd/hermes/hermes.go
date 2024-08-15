@@ -76,7 +76,7 @@ func main() {
 	fmt.Println(modelOutput)
 
 	// Create the commenter
-	token := os.Getenv("GITHUB_TOKEN")
+	token := os.Getenv("GH_TOKEN")
 	if token == "" {
 		fmt.Println("GITHUB_TOKEN not set")
 		os.Exit(1)
