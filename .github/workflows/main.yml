@@ -4,6 +4,7 @@ on:
 jobs:
   hermes-summarize:
     runs-on: ubuntu-latest
+    permissions: write-all
     name: Hermes summarize
     steps:
       - uses: actions/checkout@v4
