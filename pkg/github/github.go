@@ -24,11 +24,13 @@ func (g *GithubClient) CommentOnPR(repoOwner, repoName string, prNumber int, com
 	// Create GitHub client
 	ctx := context.Background()
 
+	name := "Hermes Summary Bot"
+
 	// Create the comment object
 	comment := &github.IssueComment{
 		Body: &commentContent,
 		User: &github.User{
-			Login: &repoOwner,
+			Name: &name,
 		},
 	}
 
