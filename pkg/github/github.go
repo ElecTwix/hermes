@@ -25,16 +25,12 @@ func (g *GithubClient) CommentOnPR(repoOwner, repoName string, prNumber int, com
 	ctx := context.Background()
 
 	// Create the comment object
-	comment := &github.PullRequestComment{
+	comment := &github.IssueComment{
 		Body: &commentContent,
-
-		// Optional: For line comments
-		// Path:     github.String("file.txt"),
-		// Position: github.Int(10),
 	}
 
 	// Create the comment on the pull request
-	_, _, err := g.Client.PullRequests.CreateComment(ctx, repoOwner, repoName, prNumber, comment)
+	_, _, err := g.Client.Issues.CreateComment(ctx, repoOwner, repoName, prNumber, comment)
 	if err != nil {
 		return err
 	}
