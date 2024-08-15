@@ -13,7 +13,7 @@ jobs:
         id: hello
         uses: ./
         with:
-          GEMINI_TOKEN: ${{ secrets.key }}
+          GEMINI_TOKEN: ${{ secrets.KEY }}
         env:
           GITHUB_PR_NUMBER: ${{github.event.pull_request.number}}
 
