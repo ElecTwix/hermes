@@ -10,10 +10,10 @@ jobs:
         with:
           fetch-depth: 0
       - name: Hermes
+        id: hello
         uses: ./
         with:
           GEMINI_TOKEN: ${{ secrets.key }}
-        id: hello
         env:
           GITHUB_PR_NUMBER: ${{github.event.pull_request.number}}
 

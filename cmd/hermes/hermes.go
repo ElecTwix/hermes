@@ -12,6 +12,21 @@ import (
 )
 
 func main() {
+	genaiInstance := genai.NewGenAI()
+	geminiToken := os.Getenv("INPUT_GEMINI_TOKEN")
+	if geminiToken == "" {
+		fmt.Println("GEMINI_TOKEN not set")
+		os.Exit(1)
+	}
+
+	ctx := context.Background()
+	err := genaiInstance.Login(ctx, geminiToken, "gemini-1.5-flash")
+	if err != nil {
+		fmt.Println(err)
+		fmt.Println("Error logging in to GenAI")
+		os.Exit(1)
+	}
+
 	workspace := os.Getenv("GITHUB_WORKSPACE")
 	if workspace == "" {
 		fmt.Println("GITHUB_WORKSPACE not set")
@@ -40,20 +55,6 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 		fmt.Println("Error getting commit message")
-		os.Exit(1)
-	}
-
-	genaiInstance := genai.NewGenAI()
-	geminiToken := os.Getenv("INPUT_GEMINI_TOKEN")
-	if geminiToken == "" {
-		fmt.Println("GEMINI_TOKEN not set")
-	}
-
-	ctx := context.Background()
-	err = genaiInstance.Login(ctx, geminiToken, "gemini-1.5-flash")
-	if err != nil {
-		fmt.Println(err)
-		fmt.Println("Error logging in to GenAI")
 		os.Exit(1)
 	}
 

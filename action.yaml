@@ -3,9 +3,8 @@ name: "Hermes Summarize"
 description: "Test Hermes"
 inputs:
   gemini_token: # id of input
-    description: "Who to greet"
+    description: "gemini_token"
     required: true
-    default: "World"
 outputs:
   time: # id of output
     description: "The time we greeted you"
