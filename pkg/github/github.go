@@ -27,6 +27,9 @@ func (g *GithubClient) CommentOnPR(repoOwner, repoName string, prNumber int, com
 	// Create the comment object
 	comment := &github.IssueComment{
 		Body: &commentContent,
+		User: &github.User{
+			Login: &repoOwner,
+		},
 	}
 
 	// Create the comment on the pull request
