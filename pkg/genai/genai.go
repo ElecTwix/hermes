@@ -20,7 +20,7 @@ func NewGenAI() *GenAI {
 	return &GenAI{}
 }
 
-func (g *GenAI) Login(apiKey string, ctx context.Context, modelName string) error {
+func (g *GenAI) Login(ctx context.Context, apiKey string, modelName string) error {
 	client, err := genai.NewClient(ctx, option.WithAPIKey(apiKey))
 	if err != nil {
 		log.Fatal(err)
