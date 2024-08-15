@@ -44,14 +44,13 @@ func main() {
 	}
 
 	genaiInstance := genai.NewGenAI()
-	apiKey := os.Getenv("GEMINI_KEY")
-	if apiKey == "" {
-		fmt.Println("GEMINI_KEY not set")
-		os.Exit(1)
+	geminiToken := os.Getenv("INPUT_GEMINI_TOKEN")
+	if geminiToken == "" {
+		fmt.Println("GEMINI_TOKEN not set")
 	}
 
 	ctx := context.Background()
-	err = genaiInstance.Login(apiKey, ctx, "gemini-pro")
+	err = genaiInstance.Login(geminiToken, ctx, "gemini-1.5-flash")
 	if err != nil {
 		fmt.Println(err)
 		fmt.Println("Error logging in to GenAI")

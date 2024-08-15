@@ -2,7 +2,7 @@
 name: "Hermes Summarize"
 description: "Test Hermes"
 inputs:
-  who-to-greet: # id of input
+  gemini_token: # id of input
     description: "Who to greet"
     required: true
     default: "World"
