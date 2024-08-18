@@ -42,3 +42,14 @@ func (g *GithubClient) CommentOnPR(repoOwner, repoName string, prNumber int, com
 
 	return nil
 }
+
+func (g *GithubClient) GetPRChanges(repoOwner, repoName string, prNumber int) ([]*github.RepositoryCommit, error) {
+	// Create GitHub client
+	ctx := context.Background()
+	// Get the commits in the pull request
+	commits, _, err := g.Client.PullRequests.ListCommits(ctx, repoOwner, repoName, prNumber, nil)
+	if err != nil {
+		return nil, err
+	}
+	return commits, nil
+}

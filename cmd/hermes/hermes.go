@@ -3,12 +3,12 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 	"strconv"
 
 	"github.com/ElecTwix/hermes/pkg/genai"
 	"github.com/ElecTwix/hermes/pkg/github"
-	"github.com/ElecTwix/hermes/pkg/gitmanager"
 )
 
 func main() {
@@ -35,45 +35,21 @@ func main() {
 
 	fmt.Println("Workspace: ", workspace)
 
-	gitManager := gitmanager.NewGitManager()
-	repo, err := gitManager.PlainOpen(workspace)
-	if err != nil {
-		fmt.Println(err)
-		fmt.Println("Error opening git repository")
-		os.Exit(1)
-	}
+	/*
+		gitManager := gitmanager.NewGitManager()
+		repo, err := gitManager.PlainOpen(workspace)
+		if err != nil {
+			fmt.Println(err)
+			fmt.Println("Error opening git repository")
+			os.Exit(1)
+		}
 
-	sha := os.Getenv("PR_GITHUB_SHA")
-	if sha == "" {
-		fmt.Println("PR_GITHUB_SHA not set")
-		os.Exit(1)
-	}
-
-	fmt.Println("SHA: ", sha)
-
-	commitMsg, err := repo.GetCommit(sha)
-	if err != nil {
-		fmt.Println(err)
-		fmt.Println("Error getting commit message")
-		os.Exit(1)
-	}
-
-	const promptPrefix string = `Please summarize this git commit message for my PR: like this:
-                File: path/to/file:15-20 added http server for serving static files
-                File: path/to/another/file:5-10 fixed bug with http server not serving files
-                File: path/to/third/file:30-35 added new feature for support bulk create for DB. 
-
-        `
-
-	prompt := fmt.Sprintf("%s DATA: [%s]", promptPrefix, commitMsg)
-	modelOutput, err := genaiInstance.Generate(prompt, ctx)
-	if err != nil {
-		fmt.Println(err)
-		fmt.Println("Error generating content")
-		os.Exit(1)
-	}
-
-	fmt.Println(modelOutput)
+			sha := os.Getenv("PR_GITHUB_SHA")
+			if sha == "" {
+				fmt.Println("PR_GITHUB_SHA not set")
+				os.Exit(1)
+			}
+	*/
 
 	// Create the commenter
 	token := os.Getenv("GH_TOKEN")
@@ -109,12 +85,42 @@ func main() {
 
 	client := github.NewGithubClient()
 	client.Auth(token)
+	changes, err := client.GetPRChanges(repoOwner, repoName, PRNumber)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	const promptPrefix string = `Please summarize this git commit message on markdown for my PR: like this:
+                File: path/to/file:15-20 added http server for serving static files
+                File: path/to/another/file:5-10 fixed bug with http server not serving files
+                File: path/to/third/file:30-35 added new feature for support bulk create for DB. 
+        `
+
+	strChanges := ""
+	for i, change := range changes {
+		fmt.Printf("Change %d: %s\n", i, change.GetCommit().GetMessage())
+		for _, file := range change.Files {
+			strChanges += fmt.Sprintf("File: %s:%d-%d %s\n", file.GetFilename(), file.GetAdditions(), file.GetDeletions(), file.GetStatus())
+		}
+
+	}
+
+	prompt := fmt.Sprintf("%s DATA: [%s]", promptPrefix, strChanges)
+	modelOutput, err := genaiInstance.Generate(prompt, ctx)
+	if err != nil {
+		fmt.Println(err)
+		fmt.Println("Error generating content")
+		os.Exit(1)
+	}
+
 	err = client.CommentOnPR(repoOwner, repoName, PRNumber, modelOutput)
 	if err != nil {
 		fmt.Println(err)
 		fmt.Println("Error commenting on PR")
 		os.Exit(1)
 	}
+
+	fmt.Println(modelOutput)
 
 	fmt.Println("Commented on PR successfully")
 }
