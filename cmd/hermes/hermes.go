@@ -3,15 +3,30 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 	"strconv"
 
 	"github.com/ElecTwix/hermes/pkg/genai"
 	"github.com/ElecTwix/hermes/pkg/github"
-	"github.com/ElecTwix/hermes/pkg/gitmanager"
 )
 
 func main() {
+	genaiInstance := genai.NewGenAI()
+	geminiToken := os.Getenv("INPUT_GEMINI_TOKEN")
+	if geminiToken == "" {
+		fmt.Println("GEMINI_TOKEN not set")
+		os.Exit(1)
+	}
+
+	ctx := context.Background()
+	err := genaiInstance.Login(ctx, geminiToken, "gemini-1.5-pro")
+	if err != nil {
+		fmt.Println(err)
+		fmt.Println("Error logging in to GenAI")
+		os.Exit(1)
+	}
+
 	workspace := os.Getenv("GITHUB_WORKSPACE")
 	if workspace == "" {
 		fmt.Println("GITHUB_WORKSPACE not set")
@@ -20,62 +35,24 @@ func main() {
 
 	fmt.Println("Workspace: ", workspace)
 
-	gitManager := gitmanager.NewGitManager()
-	repo, err := gitManager.PlainOpen(workspace)
-	if err != nil {
-		fmt.Println(err)
-		fmt.Println("Error opening git repository")
-		os.Exit(1)
-	}
+	/*
+		gitManager := gitmanager.NewGitManager()
+		repo, err := gitManager.PlainOpen(workspace)
+		if err != nil {
+			fmt.Println(err)
+			fmt.Println("Error opening git repository")
+			os.Exit(1)
+		}
 
-	sha := os.Getenv("PR_GITHUB_SHA")
-	if sha == "" {
-		fmt.Println("PR_GITHUB_SHA not set")
-		os.Exit(1)
-	}
-
-	fmt.Println("SHA: ", sha)
-
-	commitMsg, err := repo.GetCommit(sha)
-	if err != nil {
-		fmt.Println(err)
-		fmt.Println("Error getting commit message")
-		os.Exit(1)
-	}
-
-	genaiInstance := genai.NewGenAI()
-	geminiToken := os.Getenv("INPUT_GEMINI_TOKEN")
-	if geminiToken == "" {
-		fmt.Println("GEMINI_TOKEN not set")
-	}
-
-	ctx := context.Background()
-	err = genaiInstance.Login(ctx, geminiToken, "gemini-1.5-flash")
-	if err != nil {
-		fmt.Println(err)
-		fmt.Println("Error logging in to GenAI")
-		os.Exit(1)
-	}
-
-	const promptPrefix string = `Please summarize this git commit message for my PR: like this:
-                File: path/to/file:15-20 added http server for serving static files
-                File: path/to/another/file:5-10 fixed bug with http server not serving files
-                File: path/to/third/file:30-35 added new feature for support bulk create for DB. 
-
-        `
-
-	prompt := fmt.Sprintf("%s DATA: [%s]", promptPrefix, commitMsg)
-	modelOutput, err := genaiInstance.Generate(prompt, ctx)
-	if err != nil {
-		fmt.Println(err)
-		fmt.Println("Error generating content")
-		os.Exit(1)
-	}
-
-	fmt.Println(modelOutput)
+			sha := os.Getenv("PR_GITHUB_SHA")
+			if sha == "" {
+				fmt.Println("PR_GITHUB_SHA not set")
+				os.Exit(1)
+			}
+	*/
 
 	// Create the commenter
-	token := os.Getenv("GITHUB_TOKEN")
+	token := os.Getenv("GH_TOKEN")
 	if token == "" {
 		fmt.Println("GITHUB_TOKEN not set")
 		os.Exit(1)
@@ -108,12 +85,40 @@ func main() {
 
 	client := github.NewGithubClient()
 	client.Auth(token)
+	changes, err := client.GetPRChanges(repoOwner, repoName, PRNumber)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	const promptPrefix string = `Please summarize this git commit on markdown for my PR`
+
+	strChanges := ""
+	for i, change := range changes {
+		fmt.Printf("Change %d: %s\n", i, change.GetCommit().GetMessage())
+		for _, file := range change.Files {
+			strChanges += fmt.Sprintf("File: %s:%d-%d %s\n", file.GetFilename(), file.GetAdditions(), file.GetDeletions(), file.GetStatus())
+			fmt.Println("strChanges: ", strChanges)
+		}
+		fmt.Println("Changes: ", strChanges)
+
+	}
+
+	prompt := fmt.Sprintf("%s DATA: [%s]", promptPrefix, strChanges)
+	modelOutput, err := genaiInstance.Generate(prompt, ctx)
+	if err != nil {
+		fmt.Println(err)
+		fmt.Println("Error generating content")
+		os.Exit(1)
+	}
+
 	err = client.CommentOnPR(repoOwner, repoName, PRNumber, modelOutput)
 	if err != nil {
 		fmt.Println(err)
 		fmt.Println("Error commenting on PR")
 		os.Exit(1)
 	}
+
+	fmt.Println(modelOutput)
 
 	fmt.Println("Commented on PR successfully")
 }

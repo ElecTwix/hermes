@@ -24,20 +24,32 @@ func (g *GithubClient) CommentOnPR(repoOwner, repoName string, prNumber int, com
 	// Create GitHub client
 	ctx := context.Background()
 
-	// Create the comment object
-	comment := &github.PullRequestComment{
-		Body: &commentContent,
+	name := "Hermes Summary Bot"
 
-		// Optional: For line comments
-		// Path:     github.String("file.txt"),
-		// Position: github.Int(10),
+	// Create the comment object
+	comment := &github.IssueComment{
+		Body: &commentContent,
+		User: &github.User{
+			Name: &name,
+		},
 	}
 
 	// Create the comment on the pull request
-	_, _, err := g.Client.PullRequests.CreateComment(ctx, repoOwner, repoName, prNumber, comment)
+	_, _, err := g.Client.Issues.CreateComment(ctx, repoOwner, repoName, prNumber, comment)
 	if err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func (g *GithubClient) GetPRChanges(repoOwner, repoName string, prNumber int) ([]*github.RepositoryCommit, error) {
+	// Create GitHub client
+	ctx := context.Background()
+	// Get the commits in the pull request
+	commits, _, err := g.Client.PullRequests.ListCommits(ctx, repoOwner, repoName, prNumber, nil)
+	if err != nil {
+		return nil, err
+	}
+	return commits, nil
 }
