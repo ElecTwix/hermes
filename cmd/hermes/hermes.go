@@ -90,7 +90,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	const promptPrefix string = `Please summarize this git commit message on markdown for my PR: like this:
+	const promptPrefix string = `Please summarize this git commit message on markdown for my PR 
+                like this and don't put the placeholder text down below:
                 File: path/to/file:15-20 added http server for serving static files
                 File: path/to/another/file:5-10 fixed bug with http server not serving files
                 File: path/to/third/file:30-35 added new feature for support bulk create for DB. 
