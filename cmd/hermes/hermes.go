@@ -90,19 +90,16 @@ func main() {
 		log.Fatal(err)
 	}
 
-	const promptPrefix string = `Please summarize this git commit message on markdown for my PR 
-                like this and don't put the placeholder text down below:
-                File: path/to/file:15-20 added http server for serving static files
-                File: path/to/another/file:5-10 fixed bug with http server not serving files
-                File: path/to/third/file:30-35 added new feature for support bulk create for DB. 
-        `
+	const promptPrefix string = `Please summarize this git commit on markdown for my PR`
 
 	strChanges := ""
 	for i, change := range changes {
 		fmt.Printf("Change %d: %s\n", i, change.GetCommit().GetMessage())
 		for _, file := range change.Files {
 			strChanges += fmt.Sprintf("File: %s:%d-%d %s\n", file.GetFilename(), file.GetAdditions(), file.GetDeletions(), file.GetStatus())
+			fmt.Println("strChanges: ", strChanges)
 		}
+		fmt.Println("Changes: ", strChanges)
 
 	}
 
